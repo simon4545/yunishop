@@ -9,18 +9,18 @@ type ProductCategory struct {
 
 type Product struct {
 	gorm.Model
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Price       float64         `json:"price"`
-	CategoryID  uint            `json:"category_id"`
-	Category    ProductCategory `gorm:"foreignKey:CategoryID"`
-	Images      []ProductImage  `gorm:"foreignKey:ProductID"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	CategoryID  uint    `json:"category_id"`
+	Category    ProductCategory
+	Images      []ProductImage
+	SKUs        []SKU `json:"skus"`
 }
 
 type SKU struct {
 	gorm.Model
 	ProductID uint    `json:"product_id"`
-	Product   Product `gorm:"foreignKey:ProductID"`
 	Variant   string  `json:"variant"`
 	Price     float64 `json:"price"`
 	Stock     int     `json:"stock"`

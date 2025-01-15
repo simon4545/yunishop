@@ -62,6 +62,7 @@ func GetProductBySKU(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, product)
 }
+
 func AddSKUs(c echo.Context) error {
 	var skus []models.SKU
 	if err := c.Bind(&skus); err != nil {
@@ -87,4 +88,18 @@ func DeleteSKU(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "SKU deleted successfully"})
+}
+
+func GetProductsByIDs(c echo.Context) error {
+	var productIDs []uint
+	if err := c.Bind(&productIDs); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
+	}
+
+	var products []models.Product
+	if err := database.DB.Where("id IN ?", productIDs).Preload("Category").Find(&products).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to retrieve products"})
+	}
+
+	return c.JSON(http.StatusOK, products)
 }
