@@ -13,6 +13,11 @@ func main() {
 
 	// Create a new Echo instance
 	e := echo.New()
+	// e.Use(middleware.Logger())
+	// e.Use(middleware.Recover())
+
+	e.POST("/create-order", handlers.CreatePayOrder)
+	e.GET("/capture-order/:id", handlers.CaptureOrder)
 
 	// Routes
 	e.GET("/product-categories", handlers.GetProductCategories)
@@ -20,6 +25,7 @@ func main() {
 	e.POST("/products", handlers.AddProduct)
 	e.DELETE("/products/:id", handlers.DeleteProduct)
 	e.GET("/products/:id", handlers.GetProduct)
+	e.PUT("/products/:id", handlers.UpdateProduct)
 	e.GET("/products/sku/:sku", handlers.GetProductBySKU)
 
 	e.POST("/skus", handlers.AddSKUs)
@@ -41,7 +47,7 @@ func main() {
 
 	// Serve static files
 	e.Static("/uploads", "./uploads")
-
+	e.Static("/", "static")
 	// Start server
-	e.Logger.Fatal(e.Start(":8081"))
+	e.Logger.Fatal(e.Start(":8082"))
 }

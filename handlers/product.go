@@ -6,6 +6,7 @@ import (
 
 	"github.com/simon4545/goshop/database"
 	"github.com/simon4545/goshop/models"
+	"gorm.io/gorm"
 
 	"github.com/labstack/echo/v4"
 )
@@ -111,7 +112,7 @@ func UpdateProduct(c echo.Context) error {
 	}
 
 	var product models.Product
-	if err := database.DB.First(&product, id).Error; err != nil {
+	if err := database.DB.Preload("SKUs").Preload("ProductImages").First(&product, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
 	}
 
@@ -120,9 +121,15 @@ func UpdateProduct(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
 	}
 
-	if err := database.DB.Model(&product).Updates(updatedProduct).Error; err != nil {
+	if err := database.DB.Model(&product).Session(&gorm.Session{FullSaveAssociations: true}).Updates(updatedProduct).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
 	}
+	// if err1 := database.DB.Model(&product).Association("SKUs").Replace(updatedProduct.SKUs); err1 != nil {
+	// 	return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
+	// }
+	// if err2 := database.DB.Model(&product).Association("ProductImages").Replace(updatedProduct.ProductImages); err2 != nil {
+	// 	return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
+	// }
 
 	return c.JSON(http.StatusOK, product)
 }

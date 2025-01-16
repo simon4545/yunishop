@@ -13,7 +13,7 @@ type Product struct {
 	Description       string         `json:"description"`
 	Price             float64        `json:"price"`
 	ProductCategoryID uint           `json:"category_id"`
-	Images            []ProductImage `json:"images"`
+	ProductImages     []ProductImage `json:"images"`
 	SKUs              []SKU          `json:"skus"`
 }
 

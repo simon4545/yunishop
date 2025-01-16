@@ -69,7 +69,7 @@ func CreateProduct(db *gorm.DB) {
 		Name:              "test",
 		Description:       "test",
 		ProductCategoryID: 1,
-		Images: []models.ProductImage{
+		ProductImages: []models.ProductImage{
 			models.ProductImage{
 				ProductID: 1,
 				URL:       "a.jpe",
@@ -115,25 +115,46 @@ func TestDeleteProduct(t *testing.T) {
 func TestUpdateProduct(t *testing.T) {
 	db := setupTestDB1()
 	database.DB = db
-	defer t.Cleanup(func() {
-		// Drop all tables
-		db.Migrator().DropTable(&models.ProductCategory{}, &models.ProductImage{}, &models.Product{}, &models.SKU{})
-		sqlDB, _ := db.DB()
-		sqlDB.Close()
-		os.Remove("product.db")
-	})
+	// defer t.Cleanup(func() {
+	// 	db.Migrator().DropTable(&models.ProductCategory{}, &models.ProductImage{}, &models.Product{}, &models.SKU{})
+	// 	sqlDB, _ := db.DB()
+	// 	sqlDB.Close()
+	// 	os.Remove("product.db")
+	// })
 
 	CreateProduct(db)
 
 	e := echo.New()
-
-	req := httptest.NewRequest(http.MethodDelete, "/products/1", nil)
+	reqBody := `{
+		"name": "Test News1",
+		"description": "Test Content1",
+		"price": 2,
+		"category_id": 2,
+		"images": [
+			{
+				"id":1,
+				"product_id": 1,
+				"url": "b.jpg"
+			}
+		],
+		"skus": [
+			{
+				"id":1,
+				"product_id": 1,
+				"variant": "blue|large",
+				"price": 2222,
+				"stock": 123
+			}
+		]
+	}`
+	req := httptest.NewRequest(http.MethodPut, "/products/1", strings.NewReader(reqBody))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	c.SetParamNames("id")
 	c.SetParamValues("1")
 
-	if assert.NoError(t, DeleteProduct(c)) {
+	if assert.NoError(t, UpdateProduct(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	}
 }

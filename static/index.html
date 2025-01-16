@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal Payment</title>
+    <script>
+        async function payWithPayPal() {
+            try {
+                // 创建订单
+                const orderResponse = await fetch('/create-order', {
+                    method: 'POST',
+                });
+                const order = await orderResponse.json();
+
+                // 重定向到 PayPal 页面完成支付
+                if (order.id) {
+                    alert(order.id)
+                    window.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${order.id}`;
+                } else {
+                    alert('Failed to create order');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Pay $1 via PayPal</h1>
+    <button onclick="payWithPayPal()">Pay Now</button>
+</body>
+</html>
