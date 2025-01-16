@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -86,6 +87,30 @@ func CreatePayOrder(c echo.Context) error {
 	return c.JSON(http.StatusOK, orderResponse)
 }
 
+// 获取订单状态
+func getOrderDetails(orderID, accessToken string) (map[string]interface{}, error) {
+	client := &http.Client{}
+	url := fmt.Sprintf("%s/v2/checkout/orders/%s", PayPalAPI, orderID)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 // 捕获订单
 func CaptureOrder(c echo.Context) error {
 	orderID := c.Param("id")
@@ -94,7 +119,18 @@ func CaptureOrder(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to get access token"})
 	}
+	// 检查订单状态
+	orderDetails, err := getOrderDetails(orderID, accessToken)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to get order details"})
+	}
 
+	if status, ok := orderDetails["status"].(string); ok && status == "COMPLETED" {
+		return c.JSON(http.StatusOK, echo.Map{
+			"message": "Order already captured",
+			"status":  status,
+		})
+	}
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", PayPalAPI+"/v2/checkout/orders/"+orderID+"/capture", nil)
 	if err != nil {

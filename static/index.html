@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PayPal Payment</title>
     <script>
+        let paymentWindow;
+
         async function payWithPayPal() {
             try {
                 // 创建订单
@@ -13,15 +15,43 @@
                 });
                 const order = await orderResponse.json();
 
-                // 重定向到 PayPal 页面完成支付
                 if (order.id) {
-                    alert(order.id)
-                    window.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${order.id}`;
+                    console.log(order.id)
+                    // 打开 PayPal 支付窗口
+                    const paypalUrl = `https://www.sandbox.paypal.com/checkoutnow?token=${order.id}`;
+                    paymentWindow = window.open(paypalUrl, 'PayPal Payment', 'width=600,height=700');
+
+                    // 检查支付窗口关闭状态
+                    const timer = setInterval(async () => {
+                        if (paymentWindow.closed) {
+                            clearInterval(timer);
+                            // 捕获订单状态
+                            await checkOrderStatus(order.id);
+                        }
+                    }, 500);
                 } else {
-                    alert('Failed to create order');
+                    alert('Failed to create order.');
                 }
             } catch (error) {
                 console.error('Error:', error);
+            }
+        }
+
+        async function checkOrderStatus(orderId) {
+            try {
+                // 捕获订单
+                const captureResponse = await fetch(`/capture-order/${orderId}`, {
+                    method: 'GET',
+                });
+                const result = await captureResponse.json();
+
+                if (result.status === 'COMPLETED') {
+                    alert('Payment successful!');
+                } else {
+                    alert('Payment not completed.');
+                }
+            } catch (error) {
+                console.error('Error checking order status:', error);
             }
         }
     </script>
