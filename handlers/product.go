@@ -26,7 +26,7 @@ func AddProduct(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to create product"})
 	}
 
-	return c.JSON(http.StatusCreated, product)
+	return c.JSON(http.StatusOK, product)
 }
 
 func DeleteProduct(c echo.Context) error {
@@ -102,4 +102,27 @@ func GetProductsByIDs(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, products)
+}
+
+func UpdateProduct(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid product ID"})
+	}
+
+	var product models.Product
+	if err := database.DB.First(&product, id).Error; err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+	}
+
+	var updatedProduct models.Product
+	if err := c.Bind(&updatedProduct); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
+	}
+
+	if err := database.DB.Model(&product).Updates(updatedProduct).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
+	}
+
+	return c.JSON(http.StatusOK, product)
 }
