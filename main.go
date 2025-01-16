@@ -25,10 +25,10 @@ func main() {
 	e.POST("/skus", handlers.AddSKUs)
 	e.DELETE("/skus/:sku", handlers.DeleteSKU)
 
-	e.GET("/news-categories", handlers.GetNewsCategories)
-	e.POST("/news-categories", handlers.CreateNewsCategory)
-	e.PUT("/news-categories/:id", handlers.UpdateNewsCategory)
-	e.DELETE("/news-categories/:id", handlers.DeleteNewsCategory)
+	e.GET("/news/categories", handlers.GetNewsCategories)
+	e.POST("/news/categories", handlers.CreateNewsCategory)
+	e.PUT("/news/categories/:id", handlers.UpdateNewsCategory)
+	e.DELETE("/news/categories/:id", handlers.DeleteNewsCategory)
 
 	e.POST("/news", handlers.CreateNews)
 	e.PUT("/news/:id", handlers.UpdateNews)

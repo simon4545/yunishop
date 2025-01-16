@@ -9,13 +9,13 @@ type ProductCategory struct {
 
 type Product struct {
 	gorm.Model
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-	CategoryID  uint    `json:"category_id"`
-	Category    ProductCategory
-	Images      []ProductImage
-	SKUs        []SKU `json:"skus"`
+	Name              string  `json:"name"`
+	Description       string  `json:"description"`
+	Price             float64 `json:"price"`
+	ProductCategoryID uint    `json:"category_id"`
+	Category          ProductCategory
+	Images            []ProductImage `json:"images"`
+	SKUs              []SKU          `json:"skus"`
 }
 
 type SKU struct {
