@@ -17,7 +17,7 @@ func main() {
 	// e.Use(middleware.Recover())
 
 	e.POST("/create-order", handlers.CreatePayOrder)
-	e.GET("/capture-order/:id", handlers.CaptureOrder)
+	e.POST("/capture-order/:id", handlers.CaptureOrder)
 
 	// Routes
 	e.GET("/product-categories", handlers.GetProductCategories)

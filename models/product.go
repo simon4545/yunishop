@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type ProductCategory struct {
 	gorm.Model
@@ -8,7 +12,9 @@ type ProductCategory struct {
 }
 
 type Product struct {
-	gorm.Model
+	ID                uint `gorm:"primarykey"`
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
 	Name              string         `json:"name"`
 	Description       string         `json:"description"`
 	Price             float64        `json:"price"`
@@ -18,7 +24,9 @@ type Product struct {
 }
 
 type SKU struct {
-	gorm.Model
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	ProductID uint    `json:"product_id"`
 	Variant   string  `json:"variant"`
 	Price     float64 `json:"price"`
@@ -26,7 +34,9 @@ type SKU struct {
 }
 
 type ProductImage struct {
-	gorm.Model
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	ProductID uint   `json:"product_id"`
 	URL       string `json:"url"`
 }

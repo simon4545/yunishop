@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -120,14 +121,14 @@ func UpdateProduct(c echo.Context) error {
 	if err := c.Bind(&updatedProduct); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
 	}
-
-	if err := database.DB.Model(&product).Session(&gorm.Session{FullSaveAssociations: true}).Updates(updatedProduct).Error; err != nil {
+	fmt.Println(updatedProduct.SKUs)
+	if err := database.DB.Debug().Session(&gorm.Session{FullSaveAssociations: true}).Model(&updatedProduct).Updates(updatedProduct).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
 	}
-	// if err1 := database.DB.Model(&product).Association("SKUs").Replace(updatedProduct.SKUs); err1 != nil {
+	// if err1 := database.DB.Debug().Model(&product).Association("SKUs").Replace(updatedProduct.SKUs); err1 != nil {
 	// 	return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
 	// }
-	// if err2 := database.DB.Model(&product).Association("ProductImages").Replace(updatedProduct.ProductImages); err2 != nil {
+	// if err2 := database.DB.Debug().Model(&product).Association("ProductImages").Replace(updatedProduct.ProductImages); err2 != nil {
 	// 	return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
 	// }
 

@@ -42,12 +42,14 @@ func TestAddProduct(t *testing.T) {
 		"category_id": 1,
 		"images": [
 			{
+				“id”: 1,
 				"product_id": 1,
 				"url": "a.jpg"
 			}
 		],
 		"skus": [
 			{
+				”id”: 1,
 				"product_id": 1,
 				"variant": "red|large",
 				"price": 1111,
@@ -70,13 +72,13 @@ func CreateProduct(db *gorm.DB) {
 		Description:       "test",
 		ProductCategoryID: 1,
 		ProductImages: []models.ProductImage{
-			models.ProductImage{
+			{
 				ProductID: 1,
-				URL:       "a.jpe",
+				URL:       "a.jpeg",
 			},
 		},
 		SKUs: []models.SKU{
-			models.SKU{
+			{
 				ProductID: 1,
 				Variant:   "red|large",
 				Price:     1212,
@@ -115,17 +117,18 @@ func TestDeleteProduct(t *testing.T) {
 func TestUpdateProduct(t *testing.T) {
 	db := setupTestDB1()
 	database.DB = db
-	// defer t.Cleanup(func() {
-	// 	db.Migrator().DropTable(&models.ProductCategory{}, &models.ProductImage{}, &models.Product{}, &models.SKU{})
-	// 	sqlDB, _ := db.DB()
-	// 	sqlDB.Close()
-	// 	os.Remove("product.db")
-	// })
+	defer t.Cleanup(func() {
+		db.Migrator().DropTable(&models.ProductCategory{}, &models.ProductImage{}, &models.Product{}, &models.SKU{})
+		sqlDB, _ := db.DB()
+		sqlDB.Close()
+		os.Remove("product.db")
+	})
 
 	CreateProduct(db)
 
 	e := echo.New()
 	reqBody := `{
+		"id": 1,
 		"name": "Test News1",
 		"description": "Test Content1",
 		"price": 2,
