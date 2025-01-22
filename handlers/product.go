@@ -65,33 +65,6 @@ func GetProductBySKU(c echo.Context) error {
 	return c.JSON(http.StatusOK, product)
 }
 
-func AddSKUs(c echo.Context) error {
-	var skus []models.SKU
-	if err := c.Bind(&skus); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
-	}
-
-	if err := database.DB.Create(&skus).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to create SKUs"})
-	}
-
-	return c.JSON(http.StatusCreated, skus)
-}
-
-func DeleteSKU(c echo.Context) error {
-	sku := c.Param("sku")
-	var skuModel models.SKU
-	if err := database.DB.Where("sku = ?", sku).First(&skuModel).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "SKU not found"})
-	}
-
-	if err := database.DB.Delete(&skuModel).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to delete SKU"})
-	}
-
-	return c.JSON(http.StatusOK, map[string]string{"message": "SKU deleted successfully"})
-}
-
 func GetProductsByIDs(c echo.Context) error {
 	var productIDs []uint
 	if err := c.Bind(&productIDs); err != nil {
@@ -113,7 +86,7 @@ func UpdateProduct(c echo.Context) error {
 	}
 
 	var product models.Product
-	if err := database.DB.Preload("SKUs").Preload("ProductImages").First(&product, id).Error; err != nil {
+	if err := database.DB.First(&product, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
 	}
 
@@ -122,15 +95,9 @@ func UpdateProduct(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
 	}
 	fmt.Println(updatedProduct.SKUs)
-	if err := database.DB.Debug().Session(&gorm.Session{FullSaveAssociations: true}).Model(&updatedProduct).Updates(updatedProduct).Error; err != nil {
+	if err := database.DB.Debug().Session(&gorm.Session{FullSaveAssociations: true}).Model(&product).Updates(updatedProduct).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
 	}
-	// if err1 := database.DB.Debug().Model(&product).Association("SKUs").Replace(updatedProduct.SKUs); err1 != nil {
-	// 	return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
-	// }
-	// if err2 := database.DB.Debug().Model(&product).Association("ProductImages").Replace(updatedProduct.ProductImages); err2 != nil {
-	// 	return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update product"})
-	// }
 
 	return c.JSON(http.StatusOK, product)
 }

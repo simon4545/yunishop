@@ -28,9 +28,6 @@ func main() {
 	e.PUT("/products/:id", handlers.UpdateProduct)
 	e.GET("/products/sku/:sku", handlers.GetProductBySKU)
 
-	e.POST("/skus", handlers.AddSKUs)
-	e.DELETE("/skus/:sku", handlers.DeleteSKU)
-
 	e.GET("/news/categories", handlers.GetNewsCategories)
 	e.POST("/news/categories", handlers.CreateNewsCategory)
 	e.PUT("/news/categories/:id", handlers.UpdateNewsCategory)
@@ -42,8 +39,6 @@ func main() {
 	e.GET("/news/:id", handlers.GetNews)
 
 	e.POST("/images", handlers.UploadImage)
-	e.DELETE("/images/:id", handlers.DeleteImage)
-	e.GET("/images/:id", handlers.GetImage)
 
 	// Serve static files
 	e.Static("/uploads", "./uploads")

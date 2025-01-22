@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/simon4545/goshop/models"
-
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -57,55 +55,5 @@ func UploadImage(c echo.Context) error {
 		return err
 	}
 
-	// Save to database
-	image := models.ProductImage{
-		ProductID: uint(productID),
-		URL:       "/uploads/" + filepath.Base(filename),
-	}
-	db := c.Get("db").(*gorm.DB)
-	if err := db.Create(&image).Error; err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, image)
-}
-
-func DeleteImage(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid id"})
-	}
-
-	db := c.Get("db").(*gorm.DB)
-	var image models.ProductImage
-	if err := db.First(&image, id).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "image not found"})
-	}
-
-	// Delete file
-	if err := os.Remove("." + image.URL); err != nil {
-		return err
-	}
-
-	// Delete from database
-	if err := db.Delete(&image).Error; err != nil {
-		return err
-	}
-
-	return c.NoContent(http.StatusNoContent)
-}
-
-func GetImage(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid id"})
-	}
-
-	db := c.Get("db").(*gorm.DB)
-	var image models.ProductImage
-	if err := db.First(&image, id).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "image not found"})
-	}
-
-	return c.JSON(http.StatusOK, image)
+	return c.JSON(http.StatusOK, "/uploads/"+filepath.Base(filename))
 }
