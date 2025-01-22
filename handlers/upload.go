@@ -6,8 +6,10 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/exp/rand"
 	"gorm.io/gorm"
 )
 
@@ -17,6 +19,13 @@ type Image struct {
 	gorm.Model
 	ProductID uint   `json:"product_id"`
 	URL       string `json:"url"`
+}
+
+func generateUniqueFilename(originalFilename string) string {
+	timestamp := time.Now().Unix()
+	randomNum := rand.Intn(10000)
+	ext := filepath.Ext(originalFilename)
+	return strconv.FormatInt(timestamp, 10) + "_" + strconv.Itoa(randomNum) + ext
 }
 
 func UploadImage(c echo.Context) error {
@@ -35,8 +44,9 @@ func UploadImage(c echo.Context) error {
 		os.Mkdir(uploadDir, 0755)
 	}
 
-	// Generate unique filename
-	filename := filepath.Join(uploadDir, strconv.Itoa(productID)+"_"+file.Filename)
+	// Generate unique filename using the generateUniqueFilename function
+	uniqueFilename := generateUniqueFilename(file.Filename)
+	filename := filepath.Join(uploadDir, strconv.Itoa(productID)+"_"+uniqueFilename)
 
 	// Save file
 	src, err := file.Open()

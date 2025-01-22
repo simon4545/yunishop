@@ -56,13 +56,18 @@ func GetProduct(c echo.Context) error {
 	return c.JSON(http.StatusOK, product)
 }
 
-func GetProductBySKU(c echo.Context) error {
-	sku := c.Param("sku")
-	var product models.Product
-	if err := database.DB.Where("sku = ?", sku).Preload("Category").First(&product).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+func GetProductsByCategory(c echo.Context) error {
+	categoryID, err := strconv.Atoi(c.Param("category_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid category ID"})
 	}
-	return c.JSON(http.StatusOK, product)
+
+	var products []models.Product
+	if err := database.DB.Where("category_id = ?", categoryID).Preload("Category").Find(&products).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to retrieve products"})
+	}
+
+	return c.JSON(http.StatusOK, products)
 }
 
 func GetProductsByIDs(c echo.Context) error {
@@ -100,4 +105,17 @@ func UpdateProduct(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, product)
+}
+
+func AddComment(c echo.Context) error {
+	var comment models.ProductReview
+	if err := c.Bind(&comment); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
+	}
+
+	if err := database.DB.Create(&comment).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to create comment"})
+	}
+
+	return c.JSON(http.StatusOK, comment)
 }
