@@ -82,7 +82,7 @@ func GetProductsByCategory(c echo.Context) error {
 		collection = collection.Where("category_id = ?", categoryID)
 	}
 	if err := collection.
-		Select("name, price,images").
+		Select("id,name, price,images").
 		// Preload("Category").
 		Offset(offset).
 		Limit(limit).
