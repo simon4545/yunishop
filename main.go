@@ -10,9 +10,11 @@ import (
 func main() {
 	// Initialize database
 	database.InitDB()
-
-	// Create a new Echo instance
+	render := handlers.NewRenderer()
+	render.AddDirectory("templates")
 	e := echo.New()
+	e.Renderer = render
+	// Create a new Echo instance
 	// e.Use(middleware.Logger())
 	// e.Use(middleware.Recover())
 
@@ -39,6 +41,7 @@ func main() {
 
 	e.POST("/images", handlers.UploadImage)
 
+	e.GET("/", handlers.GetProductsByCategory)
 	// Serve static files
 	e.Static("/uploads", "./uploads")
 	e.Static("/", "static")

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .product-gallery {
+            display: flex;
+            gap: 20px;
+        }
+        .product-gallery img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+        .thumbnail-list img {
+            width: 100px;
+            height: 100px;
+            margin-right: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .details {
+            flex: 1;
+        }
+        .details h1 {
+            font-size: 32px;
+        }
+        .details p {
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        .sku-options select {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .buy-button {
+            background-color: #27ae60;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .buy-button:hover {
+            background-color: #2ecc71;
+        }
+        .reviews {
+            margin-top: 40px;
+        }
+        .reviews h2 {
+            font-size: 26px;
+        }
+        .review {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .stars {
+            color: #f39c12;
+            font-size: 20px;
+        }
+        .review img {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="product-gallery">
+            <img src="https://via.placeholder.com/500" alt="Main Product Image">
+            <div class="thumbnail-list">
+                <img src="https://via.placeholder.com/100" alt="Thumbnail 1">
+                <img src="https://via.placeholder.com/100" alt="Thumbnail 2">
+                <img src="https://via.placeholder.com/100" alt="Thumbnail 3">
+            </div>
+        </div>
+        <div class="details">
+            <h1>商品标题</h1>
+            <p>发货物流：快速配送</p>
+            <div class="sku-options">
+                <label for="sku">选择规格:</label>
+                <select id="sku">
+                    <option>规格1</option>
+                    <option>规格2</option>
+                    <option>规格3</option>
+                </select>
+            </div>
+            <button class="buy-button">立即购买</button>
+            <div class="description">
+                <h2>商品介绍</h2>
+                <p>这里是商品的详细介绍，包含产品的特性、用途等信息。</p>
+            </div>
+        </div>
+        <div class="reviews">
+            <h2>买家评价</h2>
+            <div class="review">
+                <p><strong>用户A：</strong> 这是一个非常棒的商品！</p>
+                <div class="stars">★★★★★</div>
+                <img src="https://via.placeholder.com/80" alt="Review Image">
+                <img src="https://via.placeholder.com/80" alt="Review Image">
+            </div>
+            <div class="review">
+                <p><strong>用户B：</strong> 物流很快，质量很好！</p>
+                <div class="stars">★★★★☆</div>
+                <img src="https://via.placeholder.com/80" alt="Review Image">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

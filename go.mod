@@ -9,8 +9,11 @@ require (
 	gorm.io/gorm v1.25.12
 )
 
+require github.com/flosch/pongo2/v6 v6.0.0 // indirect
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/flosch/pongo2 v0.0.0-20200913210552-0d938eb266f3
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect

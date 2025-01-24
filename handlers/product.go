@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/simon4545/goshop/conster"
 	"github.com/simon4545/goshop/database"
 	"github.com/simon4545/goshop/models"
 	"gorm.io/gorm"
@@ -59,15 +60,41 @@ func GetProduct(c echo.Context) error {
 func GetProductsByCategory(c echo.Context) error {
 	categoryID, err := strconv.Atoi(c.Param("category_id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid category ID"})
+		categoryID = 0
 	}
+
+	// Get pagination parameters from query string
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	if page <= 0 {
+		page = 1
+	}
+
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	if limit <= 0 {
+		limit = 20
+	}
+
+	offset := (page - 1) * limit
 
 	var products []models.Product
-	if err := database.DB.Where("category_id = ?", categoryID).Preload("Category").Find(&products).Error; err != nil {
+	collection := database.DB
+	if categoryID != 0 {
+		collection = collection.Where("category_id = ?", categoryID)
+	}
+	if err := collection.
+		Select("name, price,images").
+		// Preload("Category").
+		Offset(offset).
+		Limit(limit).
+		Find(&products).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to retrieve products"})
 	}
-
-	return c.JSON(http.StatusOK, products)
+	return c.Render(http.StatusOK, "index.html", map[string]interface{}{
+		"title":       conster.Title,
+		"description": conster.Description,
+		"products":    products,
+	})
+	// return c.JSON(http.StatusOK, products)
 }
 
 func GetProductsByIDs(c echo.Context) error {
