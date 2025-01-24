@@ -75,6 +75,9 @@ func main() {
 		}
 		item.Images = strings.ReplaceAll(item.Images, "\\", "/")
 		item.Images = strings.ReplaceAll(item.Images, `C:/lutian/PicBackup`, "")
+
+		item.Content = strings.ReplaceAll(item.Content, "\\", "/")
+
 		product := Product{
 			Name:    item.Title,
 			Content: item.Content,
