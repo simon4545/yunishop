@@ -3,7 +3,9 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path"
 	"strconv"
+	"strings"
 
 	"github.com/simon4545/goshop/conster"
 	"github.com/simon4545/goshop/database"
@@ -88,6 +90,12 @@ func GetProductsByCategory(c echo.Context) error {
 		Limit(limit).
 		Find(&products).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to retrieve products"})
+	}
+	for i := range products {
+		products[i].ProductImages = strings.Split(products[i].ProductImages, "|")[0]
+		var url = path.Join("/pic", products[i].ProductImages)
+		products[i].ProductImages = url
+		fmt.Println(products[i].ProductImages)
 	}
 	return c.Render(http.StatusOK, "index.html", map[string]interface{}{
 		"title":       conster.Title,
