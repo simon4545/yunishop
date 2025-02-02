@@ -43,6 +43,10 @@ func stringToFloat(s string) float64 {
 	return value
 }
 func main() {
+	transferData()
+}
+
+func transferData() {
 	// 連接 a.sqlite
 	srcDB, err := gorm.Open(sqlite.Open("../ruten.sqlite"), &gorm.Config{})
 	if err != nil {
