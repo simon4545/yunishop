@@ -19,7 +19,7 @@ const db = new Database('./ruten.sqlite');
         // 使用 iterate 方法逐行讀取
         for (const row of stmt.iterate()) {
             console.log('Row:', row);
-            let images = row.圖片.replace(/\\/g, '/').replace('C:/lutian/PicBackup', '');
+            let images = row.圖片.replace(/\\/g, '/').replace(/C:\/lutian\/PicBackup/g, '');
             images = images.split('|');
             const jsonString = JSON.stringify(images);
             let temp = [];
@@ -43,18 +43,62 @@ const db = new Database('./ruten.sqlite');
                 }];
 
                 temp[0].values = skulist;
-                temp = JSON.stringify(temp);
+
             } catch (e) {
 
             }
-
-            const [rows, fields] = await mysqlDb.query(
+            tempstr = JSON.stringify(temp);
+            let [rows, fields] = await mysqlDb.query(
                 `INSERT INTO products_1 
                 (price, images, variables,brand_id,video) 
                 VALUES 
                 (?, ?, ?,0,"")`,
-                [row.直購價, jsonString, temp]);
+                [row.直購價, jsonString, tempstr]);
             console.log('Inserted:', rows.insertId);
+            productid = rows.insertId;
+            await mysqlDb.query(
+                `INSERT INTO product_categories_1
+                (product_id, category_id) 
+                VALUES 
+                (?, ?)`,
+                [productid, 100003]);
+            await mysqlDb.query(
+                `INSERT INTO product_descriptions_1
+                (product_id, locale, name,content) 
+                VALUES 
+                (?, ?, ?,?)`,
+                [productid, 'zh_hk', row.標題, row.說明]);
+
+
+            let skupos = null
+            try {
+                skupos = JSON.parse(row.自訂規格)[1];
+            } catch (e) {
+
+            }
+            if (skupos != null) {
+                let index = 0;
+                for (let key in skupos) {
+                    const value = skupos[key];
+                    let is_default = index == 0 ? 1 : 0;
+                    await mysqlDb.query(
+                        `INSERT INTO product_skus_1
+                        (product_id, variants, position,sku,price,origin_price,cost_price,quantity,is_default) 
+                        VALUES 
+                        (?, ?, ?,?,?,?,?,?,?)`,
+                        [productid, `["${index}"]`, index, rand(), value.price, value.price, value.price, 1000, is_default]);
+                    index++;
+                }
+            } else {
+                await mysqlDb.query(
+                    `INSERT INTO product_skus_1
+                    (product_id, variants, position,sku,price,origin_price,cost_price,quantity,is_default) 
+                    VALUES 
+                    (?, ?, ?,?,?,?,?,?,?)`,
+                    [productid, `""`, 0, rand(), row.直購價, row.直購價, row.直購價, 1000, 1]);
+
+            }
+
         }
 
     } catch (e) {
@@ -67,3 +111,23 @@ const db = new Database('./ruten.sqlite');
     });
 
 })();
+
+
+function rand() {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+
+    let result = "";
+
+    // 生成5个随机字母
+    for (let i = 0; i < 5; i++) {
+        result += letters.charAt(Math.floor(Math.random() * letters.length));
+    }
+
+    // 生成10个随机数字
+    for (let i = 0; i < 10; i++) {
+        result += numbers.charAt(Math.floor(Math.random() * numbers.length));
+    }
+
+    return result;
+}
