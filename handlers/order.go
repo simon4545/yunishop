@@ -11,14 +11,15 @@ import (
 )
 
 type OrderRequest struct {
-	Products   []models.Product `json:"products"`
-	Status     string           `json:"status"`
-	FirstName  string           `json:"first_name"`
-	LastName   string           `json:"last_name"`
-	Phone      string           `json:"phone"`
-	Email      string           `json:"email"`
-	Address    string           `json:"address"`
-	PostalCode string           `json:"postal_code"`
+	Products   []models.Product   `json:"products"`
+	CustomerID uint               `json:"customer_id"`
+	AgentID    uint               `json:"agent_id"` // 订单所属代理商
+	OrderNo    string             `gorm:"size:50;unique" json:"order_no"`
+	TotalPrice float64            `gorm:"type:decimal(10,2);not null" json:"total_price"`
+	Status     models.OrderStatus `gorm:"size:20" json:"status"`
+	Address    string             `gorm:"size:255" json:"address"`
+	Phone      string             `gorm:"size:20" json:"phone"`
+	Remark     string             `gorm:"size:255" json:"remark"`
 }
 
 func CreateOrder(c echo.Context) error {
@@ -28,13 +29,13 @@ func CreateOrder(c echo.Context) error {
 	}
 
 	order := models.Order{
-		Status:     orderRequest.Status,
-		FirstName:  orderRequest.FirstName,
-		LastName:   orderRequest.LastName,
-		Phone:      orderRequest.Phone,
-		Email:      orderRequest.Email,
+		Status:     models.OrderStatus(orderRequest.Status),
+		CustomerID: 1,
+		AgentID:    1,
+		OrderNo:    orderRequest.Phone,
+		TotalPrice: 1,
 		Address:    orderRequest.Address,
-		PostalCode: orderRequest.PostalCode,
+		Remark:     orderRequest.Remark,
 	}
 
 	if err := database.DB.Create(&order).Error; err != nil {
@@ -43,7 +44,7 @@ func CreateOrder(c echo.Context) error {
 
 	// Add products to order
 	for _, product := range orderRequest.Products {
-		orderProduct := models.Item{
+		orderProduct := models.OrderItem{
 			OrderID:   order.ID,
 			ProductID: product.ID,
 		}
@@ -75,7 +76,7 @@ func UpdateOrderStatus(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
 	}
 
-	order.Status = statusUpdate.Status
+	order.Status = models.OrderStatus(statusUpdate.Status)
 	database.DB.Save(&order)
 	return c.JSON(http.StatusOK, order)
 }

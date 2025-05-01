@@ -22,5 +22,15 @@ func InitDB() {
 		&models.Product{},
 		&models.NewsCategory{},
 		&models.News{},
-		&models.ProductCategory{})
+		&models.ProductCategory{},
+		&models.Customer{},
+		&models.Agent{},
+		&models.Admin{},
+		&models.Category{},
+		&models.Product{},
+		&models.Discount{},
+		&models.Order{},
+		&models.OrderItem{},
+		&models.AfterSales{},
+	)
 }
