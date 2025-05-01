@@ -18,7 +18,7 @@ func main() {
 	// e.Use(middleware.Logger())
 	// e.Use(middleware.Recover())
 
-	e.POST("/create-order", handlers.CreatePayOrder)
+	e.POST("/create-order", handlers.CreatePayOrder, handlers.JWTMiddleware)
 	e.POST("/capture-order/:id", handlers.CaptureOrder)
 
 	// Routes

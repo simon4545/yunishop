@@ -5,6 +5,8 @@ import "time"
 // 用户基础结构
 type BaseUser struct {
 	ID         uint      `gorm:"primaryKey" json:"id"`
+	UserName   string    `gorm:"size:50"`
+	Password   string    `gorm:"size:50"`
 	Name       string    `gorm:"size:100;not null" json:"name"`
 	BirthDate  time.Time `json:"birth_date"`
 	Province   string    `gorm:"size:50" json:"province"`
@@ -19,7 +21,10 @@ type BaseUser struct {
 // 客户
 type Customer struct {
 	BaseUser
-	AgentID uint `json:"agent_id"` // 归属代理商编号
+	Level      int
+	SessionKey string `gorm:"size:255"`
+	OpenId     string `gorm:"size:255" json:"openid"`
+	AgentID    uint   `json:"agent_id"` // 归属代理商编号
 }
 
 // 代理商
